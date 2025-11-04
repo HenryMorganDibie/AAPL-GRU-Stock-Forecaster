@@ -1,40 +1,107 @@
-# 🏆 Project Conclusion: GRU Model Performance
+Comprehensive Report: AAPL Stock Price Forecasting via GRU Neural Network
+==========================================================================
 
-A concise summary of the forecasting results, model selection rationale, and predicted price points for AAPL.
+1. Executive Summary
+--------------------
 
----
+This project establishes a high-performance, end-to-end pipeline for forecasting the closing price of Apple stock (AAPL) using a Gated Recurrent Unit (GRU) deep learning model. Utilizing the specialized Darts time-series framework, the system achieves a robust baseline performance with a Mean Absolute Percentage Error (MAPE) of 0.27% for the 1-Day ahead prediction. The entire pipeline, from data preparation to model persistence, is designed for reproducibility and automation.
 
-## 1. Final Evaluation Metrics (MAPE)
+The primary objective — to predict closing prices 1-day, 1-week (5 days), and 1-month (21 days) ahead — was successfully met, with results validated against a strict, non-overlapping validation set.
 
-The Mean Absolute Percentage Error (MAPE) scores on the validation set demonstrate the model's robustness:
 
-| Horizon | MAPE Score | Performance Interpretation |
-| :--- | :--- | :--- |
-| **1 Day Ahead** | **0.2726%** | Outstanding: The model's prediction is, on average, less than 0.3% off the actual price. |
-| **1 Week Ahead (5 Days)** | **1.0403%** | High Accuracy: An error margin of just over 1% over a trading week is highly reliable. |
-| **1 Month Ahead (21 Days)** | **4.1789%** | Strong Performance: Maintaining an error under 5% across a full month of market volatility is a significant achievement. |
+2. Methodology and Framework Selection
+--------------------------------------
 
-*These results validate the project's methodology, showing that the non-linear capabilities of the GRU network were well-suited to model the non-stationary, trend-heavy nature of the stock market time series.*
+2.1. Data Ingestion and Preparation
+-----------------------------------
 
----
+The raw data consists of historical AAPL daily closing prices, volume, and open/high/low data sourced from a major financial API.
 
-## 2. Model Selection Rationale
+**Feature Engineering Rationale (Univariate Approach):**
 
-Both LSTM and GRU architectures were considered (saved models are available in `models/`). The GRU was chosen for these reasons:
+- Establishing a Strong Baseline: Isolates the model’s ability to learn temporal dependencies and trend dynamics from the target variable itself.
+- Minimizing Noise: Reduces complexity from early-stage features like volume or momentum that may introduce noise.
 
-* **Efficiency:** GRU has fewer parameters, leading to faster training and reduced computational load.
-* **Simplicity:** Simpler architecture reduces the risk of overfitting compared to LSTM, resulting in a more stable production model.
+**Data Splitting Strategy:**
 
----
+- Training Set: Historical data up to the beginning of the validation period (e.g., 2015–2023)
+- Validation Set: Last 252 trading days (~1 year). All MAPE scores and visualizations are based on this unseen validation data.
 
-## 3. Summary of Predicted Price Points
 
-Based on forecasts generated at the validation split point, the model predicted the following closing prices:
+2.2. Framework Selection: The Darts Advantage
+---------------------------------------------
 
-| Horizon | Predicted Closing Price |
-| :--- | :--- |
-| **1 Day Ahead** | **$188.29** |
-| **1 Week Ahead (Day 5)** | **$186.40** |
-| **1 Month Ahead (Day 21)** | **$181.04** |
+- **Unified API:** Simplifies data handling (e.g., TimeSeries.from_dataframe) and PyTorch tensor conversion.  
+- **Built-in Utilities:** Includes scalers, metrics, and model wrappers for deep learning.  
+- **Multi-Horizon Support:** Simplifies direct multi-step forecasting with `output_chunk_length` parameter.
 
-In conclusion, this project successfully delivered a highly accurate and robust financial forecasting solution, ready for deployment or further enhancement with exogenous data features.
+
+3. Model Architecture and Forecasting Strategy
+----------------------------------------------
+
+3.1. Model Selection: GRU over LSTM
+-----------------------------------
+
+| Architecture | Rationale for Selection |
+|---------------|------------------------|
+| **Gated Recurrent Unit (GRU)** | Efficiency: Fewer gates (Reset/Update) → faster training & fewer parameters. Excellent performance on univariate data. |
+| **LSTM** | Effective but more complex; slightly slower training with no significant MAPE gain. |
+
+Final model: `RNNModel (GRU variant)` with 30-day input lag (`input_chunk_length=30`), trained for 50 epochs with early stopping.
+
+
+3.2. Multi-Horizon Forecasting (Direct Multi-Step)
+--------------------------------------------------
+
+- **Output Horizon:** 21 trading days (≈ 1 month).  
+- **Single Training Pass:** Predicts all 21 steps simultaneously from a 30-day historical window.  
+- **Evaluation Mapping:**
+  - 1-Day Ahead → Index 1 of output
+  - 1-Week Ahead (5 Days) → Index 5 of output
+  - 1-Month Ahead (21 Days) → Index 21 of output
+
+
+4. Results and Performance Evaluation
+-------------------------------------
+
+The main metric used is **Mean Absolute Percentage Error (MAPE)** — a measure of typical deviation from actual price as a percentage.
+
+
+4.1. Final Evaluation Metrics (MAPE)
+------------------------------------
+
+| Horizon          | Trading Days | MAPE Score | Performance Interpretation |
+|------------------|---------------|-------------|-----------------------------|
+| 1 Day Ahead      | 1             | 0.2726%     | Exceptional: Prediction < 0.3% off actual closing price. |
+| 1 Week Ahead     | 5             | 1.0403%     | Highly Accurate: Error near 1% over full trading week. |
+| 1 Month Ahead    | 21            | 4.1789%     | Strong: Maintained <5% error threshold across extended market periods. |
+
+
+4.2. Discussion of Error Drift
+------------------------------
+
+Error increases predictably with forecast horizon (0.27% → 4.17%), known as **error accumulation** or **horizon drift**.  
+Despite this, the GRU model maintains high precision for short-term forecasts and meaningful accuracy for medium-term outlooks.
+
+
+5. Conclusion and Future Work
+-----------------------------
+
+5.1. Conclusion
+---------------
+
+The **AAPL-GRU-Stock-Forecaster** successfully delivers a robust, automated deep learning system for financial forecasting.  
+The GRU architecture, supported by Darts and Direct Multi-step forecasting, ensures high accuracy, reproducibility, and scalability.
+
+
+5.2. Limitations and Next Steps
+-------------------------------
+
+| Limitation        | Solution / Next Step |
+|-------------------|----------------------|
+| **Univariate Data** | Integrate Exogenous Regressors — add Volume, Technical Indicators (RSI, MACD), and macroeconomic/sentiment data as known future inputs in Darts. |
+| **Static Training** | Implement Rolling Retraining — periodically re-train (e.g., quarterly) to adapt to new data and maintain relevance. |
+| **Noisy Data** | Enhance Preprocessing — consider signal decomposition or wavelet transforms to separate trend and seasonality. |
+
+
+------------------------------
