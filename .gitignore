@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+
+# Data & Models (Binary Artifacts)
+# Exclude raw data (can be refetched by data_pipeline.py)
+data/raw/
+
+# Exclude processed data
+data/processed/
+
+# Exclude large trained models and checkpoints
+models/*.pkl
+models/*.ckpt
+models/placeholder.txt
+
+# Environment
+.venv/

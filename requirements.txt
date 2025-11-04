@@ -1,0 +1,14 @@
+# --- Core Libraries ---
+pandas>=2.0.0            # Data manipulation and TimeSeries base
+numpy>=1.24.0            # Numerical operations
+
+# --- Financial Data Sourcing ---
+yfinance==0.2.66         # To download AAPL historical data from Yahoo Finance
+
+# --- Forecasting Framework (Darts) ---
+# We install Darts with the [torch] extra to get the RNNModel (LSTM) dependency
+darts[torch]==0.38.0
+
+# --- Development/Notebook Libraries ---
+matplotlib>=3.7.0        # For plotting/visualization in notebooks
+jupyterlab>=4.0.0        # For running the .ipynb notebooks
