@@ -134,6 +134,8 @@ This script will sequentially:
 
 - Execute src/forecasting_model.py.
 
+- Execute src/forecasting_model.py, which generates the two-sheet Excel report (aapl_forecast_results.xlsx) in the reports/ directory.
+
 - Output the final MAPE metrics to the console.
 
 
@@ -202,10 +204,16 @@ The historical validation results (on the 2023 data split) confirmed the model�
 
 ## 📁 Final Reporting (Jupyter Notebooks)
 
-To view the detailed data analysis, model performance visualization, and complete justification report, open the following notebooks:
+The final results are presented in two forms: 
+ 
+- A **generated Excel spreadsheet** for data  
+- A **Jupyter Notebook** for visualization and detailed analysis  
 
-| Notebook | Description |
-|-----------|--------------|
+To view the detailed data analysis, model performance visualization, and complete justification report, open the following files:
+
+| **File Name** | **Description** |
+|----------------|-----------------|
+| **aapl_forecast_results.xlsx** | Final two-sheet Excel report containing the full 21-day Live Forecast data and historical prediction vs. actual data. |
 | **01_EDA_Preprocessing.ipynb** | Review the data cleaning process and initial time series plots. |
 | **02_Model_Training_Evaluation.ipynb** | Load the saved model, regenerate the final forecast, and analyze the results — including key MAPE scores and the Actual vs. Predicted Price Plot. |
 | **placeholder.txt** | Project Conclusion |
